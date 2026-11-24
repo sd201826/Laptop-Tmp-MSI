@@ -50,13 +50,13 @@ public sealed class FanStatusPanel : Panel
             AutoEllipsis = true
         };
 
-        _decrease = CreateControlButton("−", 36);
-        _increase = CreateControlButton("+", 36);
+        _decrease = CreateControlButton("DOWN", 54);
+        _increase = CreateControlButton("UP", 44);
         _reset = CreateControlButton("RESET", 66);
 
         _decrease.Location = new Point(14, 91);
-        _increase.Location = new Point(56, 91);
-        _reset.Location = new Point(98, 91);
+        _increase.Location = new Point(74, 91);
+        _reset.Location = new Point(124, 91);
 
         // Fan speed writes are intentionally not sent to the embedded controller.
         // The app can report RPM, but it cannot safely assume a laptop-specific fan protocol.
@@ -67,7 +67,7 @@ public sealed class FanStatusPanel : Panel
         _mode = new Label
         {
             Text = "FIRMWARE AUTO  /  READ ONLY",
-            Location = new Point(14, 128),
+            Location = new Point(14, 123),
             Size = new Size(270, 17),
             ForeColor = Color.FromArgb(151, 159, 172),
             Font = new Font("Segoe UI", 7.5F, FontStyle.Bold),
