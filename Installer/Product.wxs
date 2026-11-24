@@ -3,7 +3,7 @@
   <Package
     Name="Laptop TEMP MSI"
     Manufacturer="SD201826"
-    Version="1.0.0"
+    Version="1.0.1"
     UpgradeCode="{4D154A9C-EAF1-4D4B-B942-0B874DF69C8C}"
     Scope="perUser">
 
