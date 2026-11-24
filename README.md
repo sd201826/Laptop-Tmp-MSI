@@ -7,7 +7,8 @@ A Windows desktop temperature dashboard with a clean black-and-white, thin-line 
 - CPU temperature and processor load
 - GPU temperature, when the laptop exposes a supported sensor
 - RAM usage
-- Fan speed, when reported by the laptop
+- Per-fan RPM readings, when reported by the laptop
+- Firmware-managed fan operation (manual speed changes are intentionally not sent to laptop hardware)
 - Storage temperature, when reported by the drive
 - A live CPU temperature history graph
 
