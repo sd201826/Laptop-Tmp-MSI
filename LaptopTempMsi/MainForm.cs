@@ -16,7 +16,6 @@ public sealed class MainForm : Form
     private readonly MetricCard _storageTemp;
     private readonly TemperatureGraph _graph;
     private readonly Label _statusLabel;
-    private readonly Label _machineLabel;
     private readonly Button _adminButton;
 
     private static readonly Color Canvas = Color.FromArgb(8, 10, 14);
@@ -52,15 +51,6 @@ public sealed class MainForm : Form
             ForeColor = Muted,
             Font = new Font("Segoe UI", 8.5F),
             Text = "INITIALIZING HARDWARE SENSORS..."
-        };
-
-        _machineLabel = new Label
-        {
-            AutoSize = false,
-            ForeColor = Muted,
-            Font = new Font("Segoe UI", 8.5F),
-            TextAlign = ContentAlignment.MiddleLeft,
-            Text = $"{Environment.MachineName}  •  {Environment.OSVersion.VersionString}"
         };
 
         _adminButton = CreateButton(IsAdministrator() ? "ADMIN ACTIVE" : "RUN AS ADMIN", 142);
@@ -120,7 +110,7 @@ public sealed class MainForm : Form
 
         var subtitle = new Label
         {
-            Text = "REAL-TIME HARDWARE MONITOR  /  LOCAL SENSOR DATA",
+            Text = $"REAL-TIME HARDWARE MONITOR  /  {Environment.MachineName.ToUpperInvariant()}",
             Location = new Point(90, 52),
             Size = new Size(470, 20),
             ForeColor = Muted,
