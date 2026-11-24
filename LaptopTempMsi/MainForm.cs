@@ -12,7 +12,7 @@ public sealed class MainForm : Form
     private readonly MetricCard _gpuTemp;
     private readonly MetricCard _cpuLoad;
     private readonly MetricCard _memoryLoad;
-    private readonly MetricCard _fanSpeed;
+    private readonly FanStatusPanel _fanPanel;
     private readonly MetricCard _storageTemp;
     private readonly TemperatureGraph _graph;
     private readonly Label _statusLabel;
@@ -39,7 +39,7 @@ public sealed class MainForm : Form
         _gpuTemp = new MetricCard("GPU TEMPERATURE", "Graphics sensor, when available");
         _cpuLoad = new MetricCard("CPU LOAD", "Total processor activity");
         _memoryLoad = new MetricCard("RAM USAGE", "Physical memory in use");
-        _fanSpeed = new MetricCard("FAN SPEED", "Reported fan speed in RPM");
+        _fanPanel = new FanStatusPanel();
         _storageTemp = new MetricCard("STORAGE TEMPERATURE", "Drive sensor, when available");
         _graph = new TemperatureGraph();
 
@@ -157,7 +157,7 @@ public sealed class MainForm : Form
         grid.Controls.Add(_gpuTemp, 1, 0);
         grid.Controls.Add(_cpuLoad, 2, 0);
         grid.Controls.Add(_memoryLoad, 0, 1);
-        grid.Controls.Add(_fanSpeed, 1, 1);
+        grid.Controls.Add(_fanPanel, 1, 1);
         grid.Controls.Add(_storageTemp, 2, 1);
         grid.Controls.Add(_graph, 0, 2);
         grid.SetColumnSpan(_graph, 3);
@@ -226,8 +226,7 @@ public sealed class MainForm : Form
 
             _cpuLoad.SetValue(FormatPercent(snapshot.CpuLoad), "Processor activity");
             _memoryLoad.SetValue(FormatPercent(snapshot.MemoryLoad), "Physical memory in use");
-            _fanSpeed.SetValue(snapshot.FanRpm.HasValue ? $"{snapshot.FanRpm.Value:0} RPM" : "N/A",
-                snapshot.FanRpm.HasValue ? "Reported fan speed" : "No fan speed sensor reported");
+            _fanPanel.SetReadings(snapshot.FanReadings);
             _storageTemp.SetValue(FormatTemperature(snapshot.StorageTemperature),
                 snapshot.StorageTemperature.HasValue ? "Drive temperature sensor" : "No storage temperature sensor reported");
 
