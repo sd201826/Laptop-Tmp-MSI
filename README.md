@@ -1,4 +1,4 @@
-# Laptop TEMP MSI
+## Laptop TEMP MSI v1.0.1
 
 A Windows desktop temperature dashboard with a clean black-and-white, thin-line design.
 
@@ -23,6 +23,10 @@ The app reads local hardware sensors with LibreHardwareMonitorLib. Sensor availa
 5. After installation, open **Laptop TEMP MSI** from the Start menu.
 
 The installer is per-user. The app is a normal Windows GUI application and does not open Command Prompt. A self-contained portable build is also included in the artifact ZIP.
+
+## Fan speed controls
+
+The dashboard reports each fan RPM sensor it can read. The DOWN, UP, and RESET buttons are displayed but disabled because generic fan-speed writes can conflict with laptop firmware and are not supported safely across laptop models. Fan speed remains under BIOS/firmware automatic control.
 
 ## Sensor access
 
