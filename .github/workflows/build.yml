@@ -23,38 +23,48 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
-      - name: Publish self-contained GUI application
+      - name: Restore packages
         shell: pwsh
-        run: >
-          dotnet publish .\LaptopTempMsi\LaptopTempMsi.csproj
-          --configuration Release
-          --runtime win-x64
-          --self-contained true
-          --output publish
-          -p:PublishSingleFile=true
-          -p:IncludeNativeLibrariesForSelfExtract=true
-          -p:EnableCompressionInSingleFile=true
-          -p:DebugType=None
-          -p:DebugSymbols=false
-          -p:PublishTrimmed=false
+        run: |
+          $ErrorActionPreference = "Stop"
+          dotnet restore .\LaptopTempMsi\LaptopTempMsi.csproj
+          if ($LASTEXITCODE -ne 0) { throw "dotnet restore failed with exit code $LASTEXITCODE" }
+
+      - name: Publish self-contained Windows GUI
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          dotnet publish .\LaptopTempMsi\LaptopTempMsi.csproj --configuration Release --runtime win-x64 --self-contained true --no-restore --output publish -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false -p:PublishTrimmed=false
+          if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path ".\publish\Laptop TEMP MSI.exe")) { throw "The expected Windows executable was not produced." }
+
+      - name: Package portable application
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          Compress-Archive -Path publish\* -DestinationPath artifacts\Laptop-TEMP-MSI-Portable.zip -Force
 
       - name: Install WiX Toolset
         shell: pwsh
         run: |
-          dotnet tool install --global wix --version 5.0.2
-          Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\.dotnet\tools"
+          dotnet tool install --tool-path .tools wix --version 5.0.2
+          if ($LASTEXITCODE -ne 0) { throw "WiX installation failed with exit code $LASTEXITCODE" }
+          .\.tools\wix.exe --version
+          if ($LASTEXITCODE -ne 0) { throw "WiX did not start correctly." }
 
-      - name: Build MSI installer and portable ZIP
+      - name: Build MSI installer
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
-          wix build Installer\Product.wxs -arch x64 -d PublishDir=publish -o artifacts\Laptop-TEMP-MSI-Setup.msi
-          Compress-Archive -Path publish\* -DestinationPath artifacts\Laptop-TEMP-MSI-Portable.zip -Force
+          $publishPath = Join-Path $PWD "publish"
+          .\.tools\wix.exe build .\Installer\Product.wxs -arch x64 -d "PublishDir=$publishPath" -o .\artifacts\Laptop-TEMP-MSI-Setup.msi
+          if ($LASTEXITCODE -ne 0) { throw "WiX MSI build failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path ".\artifacts\Laptop-TEMP-MSI-Setup.msi")) { throw "The MSI installer was not produced." }
 
       - name: Upload Windows downloads
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Laptop-TEMP-MSI-Windows-x64
           path: artifacts\*
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
