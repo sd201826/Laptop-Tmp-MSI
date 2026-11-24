@@ -100,7 +100,7 @@ public sealed class HardwareMonitor : IDisposable
         if (values.Count == 0)
             return null;
 
-        foreach (string hint in new[] { "package", "tctl", "die", "core" })
+        foreach (string hint in new[] { "package", "tctl", "die" })
         {
             var preferred = values.FirstOrDefault(s =>
                 s.SensorName.Contains(hint, StringComparison.OrdinalIgnoreCase));
