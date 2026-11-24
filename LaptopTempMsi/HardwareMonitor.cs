@@ -64,7 +64,12 @@ public sealed class HardwareMonitor : IDisposable
             GpuTemperature: PickTemperature(gpuSensors),
             CpuLoad: PickLoad(cpuSensors),
             MemoryLoad: ReadMemoryLoad(),
-            FanRpm: PickMaximum(sensors.Where(s => s.SensorType == SensorType.Fan)),
+            FanReadings: sensors
+                .Where(s => s.SensorType == SensorType.Fan && s.Value >= 0)
+                .GroupBy(s => $"{s.HardwareName} / {s.SensorName}", StringComparer.OrdinalIgnoreCase)
+                .Select(group => new FanReading(group.Key, group.Max(s => s.Value)))
+                .OrderBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+                .ToArray(),
             StorageTemperature: PickTemperature(storageSensors),
             CpuName: cpuName,
             GpuName: gpuName,
@@ -210,12 +215,14 @@ public sealed class HardwareMonitor : IDisposable
         double Value);
 }
 
+public sealed record FanReading(string Name, double Rpm);
+
 public sealed record SensorSnapshot(
     double? CpuTemperature,
     double? GpuTemperature,
     double? CpuLoad,
     double? MemoryLoad,
-    double? FanRpm,
+    IReadOnlyList<FanReading> FanReadings,
     double? StorageTemperature,
     string? CpuName,
     string? GpuName,
