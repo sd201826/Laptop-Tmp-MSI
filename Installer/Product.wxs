@@ -23,7 +23,7 @@
     </StandardDirectory>
 
     <StandardDirectory Id="ProgramMenuFolder">
-      <Directory Id="StartMenuFolder" Name="Laptop TEMP MSI" />
+      <Directory Id="LaptopTempMsiStartMenuFolder" Name="Laptop TEMP MSI" />
     </StandardDirectory>
 
     <StandardDirectory Id="DesktopFolder" />
@@ -34,13 +34,13 @@
       </Component>
     </ComponentGroup>
 
-    <Component Id="StartMenuShortcut" Directory="StartMenuFolder" Guid="{F7D730E4-0957-47B4-AF57-A6A016B63CF4}">
+    <Component Id="StartMenuShortcut" Directory="LaptopTempMsiStartMenuFolder" Guid="{F7D730E4-0957-47B4-AF57-A6A016B63CF4}">
       <Shortcut
         Id="StartMenuLink"
         Name="Laptop TEMP MSI"
         Target="[InstallFolder]Laptop TEMP MSI.exe"
         WorkingDirectory="InstallFolder" />
-      <RemoveFolder Id="RemoveStartMenuFolder" Directory="StartMenuFolder" On="uninstall" />
+      <RemoveFolder Id="RemoveStartMenuFolder" Directory="LaptopTempMsiStartMenuFolder" On="uninstall" />
       <RegistryValue Root="HKCU" Key="Software\Laptop TEMP MSI" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
     </Component>
 
