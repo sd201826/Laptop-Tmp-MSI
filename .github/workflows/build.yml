@@ -1,0 +1,60 @@
+name: Build Laptop TEMP MSI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    name: Build Windows x64 app and installer
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish self-contained GUI application
+        shell: pwsh
+        run: >
+          dotnet publish .\LaptopTempMsi\LaptopTempMsi.csproj
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output publish
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          -p:DebugType=None
+          -p:DebugSymbols=false
+          -p:PublishTrimmed=false
+
+      - name: Install WiX Toolset
+        shell: pwsh
+        run: |
+          dotnet tool install --global wix --version 5.0.2
+          Add-Content -Path $env:GITHUB_PATH -Value "$env:USERPROFILE\.dotnet\tools"
+
+      - name: Build MSI installer and portable ZIP
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts | Out-Null
+          wix build Installer\Product.wxs -arch x64 -d PublishDir=publish -o artifacts\Laptop-TEMP-MSI-Setup.msi
+          Compress-Archive -Path publish\* -DestinationPath artifacts\Laptop-TEMP-MSI-Portable.zip -Force
+
+      - name: Upload Windows downloads
+        uses: actions/upload-artifact@v4
+        with:
+          name: Laptop-TEMP-MSI-Windows-x64
+          path: artifacts\*
+          if-no-files-found: error
+          retention-days: 30
